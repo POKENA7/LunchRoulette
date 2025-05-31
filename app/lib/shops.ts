@@ -16,7 +16,7 @@ export async function getAllShops(): Promise<ShopWithTags[]> {
 
   // 各店舗のタグを個別に取得
   const shopsWithTags: ShopWithTags[] = [];
-  
+
   for (const shop of shops) {
     // shop_tagsテーブルから店舗IDで絞り込み
     const { data: shopTagLinks } = await supabase
@@ -25,8 +25,8 @@ export async function getAllShops(): Promise<ShopWithTags[]> {
       .eq("shop_id", shop.id);
 
     // タグIDの配列を取得
-    const tagIds = shopTagLinks?.map(link => link.tag_id) || [];
-    
+    const tagIds = shopTagLinks?.map((link) => link.tag_id) || [];
+
     // 各タグの詳細を取得
     const tags: Tag[] = [];
     if (tagIds.length > 0) {
@@ -34,13 +34,13 @@ export async function getAllShops(): Promise<ShopWithTags[]> {
         .from("tags")
         .select("*")
         .in("id", tagIds);
-      
+
       tags.push(...(tagDetails || []));
     }
-    
+
     shopsWithTags.push({
       ...shop,
-      tags
+      tags,
     });
   }
 
@@ -141,14 +141,14 @@ export async function getShopsByTags(
 ): Promise<ShopWithTags[]> {
   // 全ての店舗を取得してフィルタリング
   const allShops = await getAllShops();
-  
+
   let filteredShops = allShops;
-  
+
   // ブロックされた店舗を除外
   if (excludeBlocked) {
-    filteredShops = filteredShops.filter(shop => !shop.is_blocked);
+    filteredShops = filteredShops.filter((shop) => !shop.is_blocked);
   }
-  
+
   // タグIDで絞り込み
   if (tagIds.length > 0) {
     filteredShops = filteredShops.filter((shop) =>
